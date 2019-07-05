@@ -27,3 +27,4 @@
 
 # Fork Updates
 - Added events for change weather and time.
+- Added GetTime server event.
