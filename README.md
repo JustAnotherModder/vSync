@@ -24,3 +24,6 @@
 `/evening` Set the time to evening.
 `/night` Set the time to night.
 `/blackout` Enable/disable blackout mode.
+
+# Fork Updates
+- Added events for change weather and time.
