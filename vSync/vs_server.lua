@@ -1,12 +1,13 @@
 ------------------ change this -------------------
 
 admins = {
-    'steam:110000105959047',
+    'steam:11000013a544f14',
+    'steam:11000010bdfb672',
     --'license:1234975143578921327',
 }
 
 -- Set this to false if you don't want the weather to change automatically every 10 minutes.
-DynamicWeather = true
+DynamicWeather = false
 
 --------------------------------------------------
 debugprint = false -- don't touch this unless you know what you're doing or you're being asked by Vespura to turn this on.
@@ -268,7 +269,7 @@ RegisterCommand('time', function(source, args, rawCommand)
                     ShiftToMinute(0)
                 end
                 local newtime = math.floor(((baseTime+timeOffset)/60)%24) .. ":"
-				local minute = math.floor((baseTime+timeOffset)%60)
+                local minute = math.floor((baseTime+timeOffset)%60)
                 if minute < 10 then
                     newtime = newtime .. "0" .. minute
                 else
@@ -359,3 +360,38 @@ function NextWeatherStage()
     end
 end
 
+RegisterNetEvent('vSync:ChangeWeather')
+AddEventHandler('vSync:ChangeWeather', function(weather, doBlackout) 
+    for i,wtype in ipairs(AvailableWeatherTypes) do
+        if wtype == string.upper(weather) then
+            validWeatherType = true
+        end
+    end
+    if validWeatherType then
+        CurrentWeather = string.upper(weather)
+        newWeatherTimer = 10
+    else
+        print("Invalid weather type, valid weather types are: \nEXTRASUNNY CLEAR NEUTRAL SMOG FOGGY OVERCAST CLOUDS CLEARING RAIN THUNDER SNOW BLIZZARD SNOWLIGHT XMAS HALLOWEEN ")
+    end
+
+    if doBlackout then
+        blackout = true
+    else
+        blackout = false
+    end
+    TriggerEvent('vSync:requestSync')
+end)
+
+RegisterNetEvent('vSync:ChangeTime')
+AddEventHandler('vSync:ChangeTime', function(hour, min)
+    local argh = tonumber(hour)
+    local argm = tonumber(min)
+    if argh < 24 then ShiftToHour(argh)
+    else ShiftToHour(0) end
+    if argm < 60 then ShiftToMinute(argm)
+    else ShiftToMinute(0) end
+    TriggerEvent('vSync:requestSync')
+end)
+
+RegisterNetEvent('vSync:GetTime')
+AddEventHandler('vSync:GetTime', function(cb) cb(math.floor(((baseTime+timeOffset)/60)%24),math.floor((baseTime+timeOffset)%60)); end)
